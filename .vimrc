@@ -1,0 +1,1 @@
+/home/jmy/.vimrc
