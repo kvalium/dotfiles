@@ -1,1 +1,4 @@
-/home/jmy/.vim/coc-settings.json
+{
+  "coc.preferences.formatOnSaveFiletypes": ["css", "javascript", "markdown", "typescript", "react"],
+  "eslint.autoFixOnSave": true
+}
