@@ -165,10 +165,10 @@ nnoremap <C-p> :GFiles<Cr>
 nnoremap <C-g> :Ag<Cr>
 
 " Easier movement between split windows CTRL + {h, j, k, l}
-nnoremap <c-h> <c-w>h
-nnoremap <c-j> <c-w>j
-nnoremap <c-k> <c-w>k
-nnoremap <c-l> <c-w>l
+nnoremap <c-Left> <c-w>h
+nnoremap <c-Down> <c-w>j
+nnoremap <c-Up> <c-w>k
+nnoremap <c-Right> <c-w>l
 
 " Switch between buffers
 :nnoremap <C-d> :bdelete<CR>
@@ -199,6 +199,11 @@ nmap <leader>qf  <Plug>(coc-fix-current)
 
 " Show autocomplete when Tab is pressed
 inoremap <silent><expr> <Tab> coc#refresh()
+
+" NERDTree tabs Switch
+map  <C-l> :tabn<CR>     " next tab
+map  <C-h> :tabp<CR>     " previous tab
+map  <C-n> :tabnew<CR>   " new tab
 
 " ========== AIRLINE FONT FIXES
 
