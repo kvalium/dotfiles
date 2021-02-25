@@ -24,20 +24,19 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'           " Set up fzf and fzf.vim
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neoclide/coc-jest'
 
 Plug 'scrooloose/nerdtree'          " Tree view
 Plug 'Xuyuanp/nerdtree-git-plugin'  " GIT support
 Plug 'jistr/vim-nerdtree-tabs'      " Tabs support
 
-" Plug 'kien/ctrlp.vim'             " Global search utility
+Plug 'kien/ctrlp.vim'             " Global search utility
 
 Plug 'scrooloose/nerdcommenter'     " Comment shortcuts
 
 " Plug 'w0rp/ale'
 
 " MISC
-" Plug 'vim-airline/vim-airline-themes'
-" Plug 'altercation/vim-colors-solarized'
 " Plug 'scrooloose/syntastic'
 " Plug 'chiel92/vim-autoformat'
 " Plug 'valloric/youcompleteme'
@@ -45,6 +44,7 @@ Plug 'scrooloose/nerdcommenter'     " Comment shortcuts
 " All of your Plugins must be added before the following line
 call plug#end()              " required
 filetype plugin indent on    " required
+filetype plugin on
 
 " Leader key is SPACE, I find it the best
 let mapleader = " "
@@ -93,11 +93,6 @@ nmap z za
 " Disable all bells and whistles
 set noerrorbells visualbell t_vb=
 
-" Ack tricks
-let g:ackprg = 'ag --vimgrep'
-nmap <leader>a :Ack! ""<Left>
-nmap <leader>A :Ack! "\b<cword>\b"<CR>
-
 " Tab Options
 set shiftwidth=2
 set tabstop=2
@@ -131,14 +126,41 @@ set clipboard=unnamed
 " Delete characters outside of insert area
 set backspace=indent,eol,start
 
+" ACK setup
+let g:ackprg = 'ag --vimgrep'
+
 " CtrlP config ignores
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP'
-let g:ctrlp_custom_ignore = 'node_modules\|git\|build\|dist\|lib'
+let g:ctrlp_custom_ignore = {
+    \ 'dir':  'node_modules\|git\|build\|dist\|lib',
+    \ 'file': '\v\.(exe|so|dll|lock|html)$',
+    \ 'link': 'some_bad_symbolic_links',
+    \ }
 
 " NERDTree auto launch
 autocmd vimenter * NERDTreeTabsToggle
 map <Leader>n <plug>NERDTreeTabsToggle<CR>
+
+" NERDTree auto reveal open file START
+" Check if NERDTree is open or active
+function! IsNERDTreeOpen()        
+  return exists("t:NERDTreeBufName") && (bufwinnr(t:NERDTreeBufName) != -1)
+endfunction
+
+" Call NERDTreeFind iff NERDTree is active, current window contains a modifiable
+" file, and we're not in vimdiff
+function! SyncTree()
+  if &modifiable && IsNERDTreeOpen() && strlen(expand('%')) > 0 && !&diff
+    NERDTreeFind
+    wincmd p
+  endif
+endfunction
+
+" Highlight currently open buffer in NERDTree
+autocmd BufRead * call SyncTree()
+" NERDTree auto reveal open file END
+
 
 " +++ Shortcuts +++
 " Open Buffer
@@ -157,8 +179,7 @@ nnoremap <silent><leader>w :w!<CR>
 nnoremap <silent><leader>q :q!<CR>
 nnoremap <silent><leader>x :x<CR>
 
-" If fzf installed using git
-set rtp+=~/.fzf
+" +++ fzf +++
 " Map fzf search to CTRL P
 nnoremap <C-p> :GFiles<Cr>
 " Map fzf + ag search to CTRL P
@@ -187,15 +208,47 @@ if isdirectory('./node_modules') && isdirectory('./node_modules/eslint')
   let g:coc_global_extensions += ['coc-eslint']
 endif
 
+" GoTo code navigation.
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 
+" Use K to show documentation in preview window.
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  elseif (coc#rpc#ready())
+    call CocActionAsync('doHover')
+  else
+    execute '!' . &keywordprg . " " . expand('<cword>')
+  endif
+endfunction
+
+" Highlight the symbol and its references when holding the cursor.
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" Symbol renaming.
+nmap <leader>rn <Plug>(coc-rename)
+
+" Formatting selected code.
+xmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
+
 " Remap keys for applying codeAction to the current line.
 nmap <leader>ac  <Plug>(coc-codeaction)
 " Apply AutoFix to problem on the current line.
 nmap <leader>qf  <Plug>(coc-fix-current)
+
+" Run jest for current project
+command! -nargs=0 Jest :call  CocAction('runCommand', 'jest.projectTest')
+" Run jest for current file
+command! -nargs=0 JestCurrent :call  CocAction('runCommand', 'jest.fileTest', ['%'])
+
+" Run jest for current test
+nnoremap <leader>te :call CocAction('runCommand', 'jest.singleTest')<CR>
 
 " Show autocomplete when Tab is pressed
 inoremap <silent><expr> <Tab> coc#refresh()
