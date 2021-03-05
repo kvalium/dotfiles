@@ -57,6 +57,14 @@ set ttyfast
 set lazyredraw
 set updatetime=300
 
+" move text
+nnoremap <A-j> :m .+1<CR>==
+nnoremap <A-k> :m .-2<CR>==
+inoremap <A-j> <Esc>:m .+1<CR>==gi
+inoremap <A-k> <Esc>:m .-2<CR>==gi
+vnoremap <A-j> :m '>+1<CR>gv=gv
+vnoremap <A-k> :m '<-2<CR>gv=gv
+
 " Material theme config
 let g:material_terminal_italics = 1
 let g:material_theme_style = 'default'
@@ -100,16 +108,22 @@ set softtabstop=2 " Number of spaces a tab counts when editing
 set expandtab
 
 " Delete empty space from the end of lines on every save
-autocmd BufWritePre * :%s/\s\+$//e
+" autocmd BufWritePre * :%s/\s\+$//e
 
 " Set default encoding to utf-8
 set encoding=utf-8
 set termencoding=utf-8
 
+" save undo tree in files
+set undofile
+set undodir=~/.vim/undo
+
+" number of undos
+set undolevels=10000
 " Disable backups and swap files
-set nobackup
-set nowritebackup
-set noswapfile
+"set nobackup
+"set nowritebackup
+"set noswapfile
 
 " Searches
 set ignorecase " Ignore case when searching
@@ -144,7 +158,7 @@ map <Leader>n <plug>NERDTreeTabsToggle<CR>
 
 " NERDTree auto reveal open file START
 " Check if NERDTree is open or active
-function! IsNERDTreeOpen()        
+function! IsNERDTreeOpen()
   return exists("t:NERDTreeBufName") && (bufwinnr(t:NERDTreeBufName) != -1)
 endfunction
 
