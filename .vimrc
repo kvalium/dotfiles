@@ -36,6 +36,9 @@ Plug 'scrooloose/nerdcommenter'     " Comment shortcuts
 
 Plug '907th/vim-auto-save' " autosave plugin
 
+" Go plugins
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+
 " Plug 'w0rp/ale'
 
 " MISC
@@ -146,8 +149,8 @@ let g:endwise_no_mappings = 1
 let g:ackprg = 'ag --vimgrep'
 
 " Autosave settings
-let g:auto_save = 1  " enable AutoSave on Vim startup
-let g:auto_save_silent = 1  " do not display the auto-save notification
+"let g:auto_save = 1  " enable AutoSave on Vim startup
+"let g:auto_save_silent = 1  " do not display the auto-save notification
 
 " CtrlP config ignores
 let g:ctrlp_map = '<c-p>'
