@@ -8,27 +8,9 @@ case $- in
       *) return;;
 esac
 
-# don't put duplicate lines or lines starting with space in the history.
-# See bash(1) for more options
-HISTCONTROL=ignoreboth
-
-# append to the history file, don't overwrite it
-shopt -s histappend
-
-# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-HISTSIZE=1000
-HISTFILESIZE=2000
-
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
-
-# If set, the pattern "**" used in a pathname expansion context will
-# match all files and zero or more directories and subdirectories.
-#shopt -s globstar
-
-# make less more friendly for non-text input files, see lesspipe(1)
-#[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # set variable identifying the chroot you work in (used in the prompt below)
 if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
@@ -89,8 +71,6 @@ fi
 
 # some more ls aliases
 alias ll='ls -Alrt'
-#alias la='ls -A'
-#alias l='ls -CF'
 alias wk='cd /home/jmy/workspace'
 
 # Alias definitions.
@@ -113,26 +93,43 @@ if ! shopt -oq posix; then
   fi
 fi
 
-#export DOCKER_HOST=tcp://localhost:2375
+# GIT
 export GIT_EDITOR=vim
 
 # CYPRESS
 export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2; exit;}'):0.0
 sudo /etc/init.d/dbus start &> /dev/null
 
+# GO
+#export GOROOT="/usr/lib/go"
+export GOPATH=$HOME/go
+export PATH=$PATH:/usr/local/go/bin
+
 # POWERLINE
-GOPATH=$HOME/go
 function _update_ps1() {
-	    PS1="$($GOPATH/bin/powerline-go --hostname-only-if-ssh)"
-    }
+    PS1="$($GOPATH/bin/powerline-go -error $?)"
+}
 if [ "$TERM" != "linux" ] && [ -f "$GOPATH/bin/powerline-go" ]; then
-	    PROMPT_COMMAND="_update_ps1; $PROMPT_COMMAND"
+    PROMPT_COMMAND="_update_ps1; $PROMPT_COMMAND"
 fi
+
+# HASKELL
 . $HOME/.ghcup/env
 
-# Added by serverless binary installer
+# SERVERLESS
 export PATH="$HOME/.serverless/bin:$PATH"
 
-# tabtab source for packages
-# uninstall by removing these lines
-[ -f ~/.config/tabtab/__tabtab.bash ] && . ~/.config/tabtab/__tabtab.bash || true
+# YARN 
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+
+ # BASH HISTORY
+# don't put duplicate lines or lines starting with space in the history.
+HISTCONTROL=ignoreboth
+# append to the history file, don't overwrite it
+shopt -s histappend
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+HISTSIZE=5000
+HISTFILESIZE=10000
+source "$HOME/.cargo/env"
+
+complete -C /usr/bin/terraform terraform
