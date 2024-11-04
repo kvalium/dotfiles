@@ -1,5 +1,16 @@
 {
-  "coc.preferences.formatOnSaveFiletypes": ["css", "javascript", "markdown", "typescript", "react", "javascriptreact"],
+  "languageserver": {
+    "rubocop": {
+      "command": "rubocop",
+      "args": ["--lsp"],
+      "filetypes": ["ruby"]
+    }
+  },
+  "coc.preferences.formatOnSave": true,
   "coc.preferences.formatOnType": true,
-  "eslint.autoFixOnSave": true
+  "solargraph.autoformat": true,
+  "solargraph.formatting": true,
+  "solargraph.hover": true,
+  "solargraph.diagnostics": true,
+  "solargraph.completion": true
 }
